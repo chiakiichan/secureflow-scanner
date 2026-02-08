@@ -75,17 +75,17 @@ secureflow scan . --exclude venv --exclude .git
 
 ⚠️ Found 2 possible secrets:
 
-[CRITICAL] AWS Access Key
+1 [CRITICAL] AWS Access Key
  Rule: SF-SEC-001
  Location: testfile.py:1
  Description: Possible secret detected: AWS Access Key
 
-------------------------------------------------------------
-
-[CRITICAL] GitHub Token
+2 [CRITICAL] GitHub Token
  Rule: SF-SEC-002
  Location: testfile.py:2
  Description: Possible secret detected: GitHub Token
+
+------------------------------------------------------------
 
 
 ### ⚠️ Security Notice
