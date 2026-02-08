@@ -15,6 +15,7 @@ from pathlib import Path
 import click
 
 from secureflow import __version__
+from secureflow.scanners.secrets import SecretsScanner
 
 @click.group()
 @click.version_option(version=__version__, prog_name="SecureFlow")
@@ -28,7 +29,12 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("path", type=click.Path(exists=True), default=".")
-def scan(path: str) -> None:
+@click.option(
+    "--exclude",
+    multiple=True,
+    help="Folders or patterns to exclude (example: venv, .git)",
+)
+def scan(path: str, exclude:tuple) -> None:
     """
     Scan a directory for security issues.
     Example:
@@ -41,12 +47,21 @@ def scan(path: str) -> None:
     click.echo(f"📂 Target: {target}")
     click.echo("=" * 60)
 
-    click.echo("✅ CLI is working.")
-    click.echo("Next: Implement the first scanner (SecretsScanner).")
+    scanner = SecretsScanner(target, exclude=list(exclude))
+    findings = scanner.scan()
+
+    if not findings:
+        click.echo("\n✅ No secrets found.")
+        return
+    
+    click.echo(f"\n⚠️ Found {len(findings)} possible secrets:\n")
+
+    for finding in findings:
+        click.echo(finding.display())
+        click.echo("-"*60)
 
 
 def main() -> None:
-    """Main entrypoint."""
     cli()
 
 
