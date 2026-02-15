@@ -1,0 +1,36 @@
+# SecureFlow Configuration
+# See https://github.com/secureflow/secureflow for documentation
+
+# Output settings
+output:
+  format: console  # console, json, sarif
+  # file: secureflow-report.json
+
+# Policy settings
+policy:
+  file: .secureflow-policy.yaml
+  fail_on_severity: HIGH
+
+# Scanner settings
+scanners:
+  secrets:
+    enabled: true
+    exclude_patterns:
+      - "*.test.js"
+      - "*_test.py"
+
+  dependencies:
+    enabled: true
+
+  docker:
+    enabled: true
+
+  iac:
+    enabled: true
+
+# Global exclusions
+exclude_paths:
+  - node_modules
+  - .git
+  - __pycache__
+  - venv

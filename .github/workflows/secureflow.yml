@@ -1,0 +1,131 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install SecureFlow
+        run: pip install -e .
+
+      - name: Run Security Scan (Console)
+        run: |
+          secureflow scan . \
+            --fail-on high \
+            --ci
+        continue-on-error: true
+
+      - name: Run Security Scan (SARIF)
+        run: |
+          secureflow scan . \
+            --format sarif \
+            --output results.sarif \
+            --fail-on high \
+            --ci
+        continue-on-error: true
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif
+
+      - name: Upload Scan Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: secureflow-results
+          path: results.sarif
+
+  dependency-review:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install SecureFlow
+        run: pip install -e .
+
+      - name: Scan Dependencies
+        run: |
+          secureflow scan . \
+            --no-secrets \
+            --no-docker \
+            --no-iac \
+            --format json \
+            --output dependency-results.json \
+            --fail-on high \
+            --ci
+        continue-on-error: true
+
+      - name: Upload Dependency Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-results
+          path: dependency-results.json
+
+  container-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install SecureFlow
+        run: pip install -e .
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy -y
+
+      - name: Scan Dockerfiles
+        run: |
+          secureflow scan . \
+            --no-secrets \
+            --no-deps \
+            --no-iac \
+            --format sarif \
+            --output docker-results.sarif \
+            --ci
+        continue-on-error: true
+
+      - name: Upload Docker Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docker-results
+          path: docker-results.sarif

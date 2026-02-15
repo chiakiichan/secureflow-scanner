@@ -5,15 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "secureflow"
 version = "1.0.0"
-description = "CI/CD Pipeline Security Scanner to Detect secrets, vulnerabilities, and misconfigurations"
+description = "Enterprise CI/CD Pipeline Security Platform - Detect secrets, vulnerabilities, and misconfigurations"
 readme = "README.md"
 license = {text = "Apache-2.0"}
 requires-python = ">=3.9"
 authors = [
-    {name = "chiakiichan", email = "keynotenotekey@gmail.com"}
+    {name = "SecureFlow Security Team", email = "security@secureflow.dev"}
 ]
 maintainers = [
-    {name = "chiakiichan", email = "keynotenotekey@gmail.com"}
+    {name = "SecureFlow Security Team", email = "security@secureflow.dev"}
 ]
 keywords = [
     "security",
@@ -25,9 +25,10 @@ keywords = [
     "terraform",
     "iac",
     "sarif",
-    "sast"
+    "sast",
 ]
 classifiers = [
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
@@ -38,11 +39,12 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Security",
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Software Development :: Testing",
+    "Typing :: Typed",
 ]
+
 dependencies = [
     "click>=8.0.0",
     "pyyaml>=6.0",
@@ -55,9 +57,9 @@ dev = [
     "pytest-cov>=4.0.0",
     "pytest-mock>=3.10.0",
     "mypy>=1.0.0",
-    "pre-commit>=3.0.0",
     "ruff>=0.1.0",
     "black>=23.0.0",
+    "pre-commit>=3.0.0",
 ]
 docs = [
     "mkdocs>=1.4.0",
@@ -66,8 +68,11 @@ docs = [
 ]
 
 [project.urls]
-Documentation = "https://medium.com/@chiakiichan"
-Repository = "https://github.com/chiakiichan/secureflow-scanner"
+Homepage = "https://github.com/secureflow/secureflow"
+Documentation = "https://secureflow.dev/docs"
+Repository = "https://github.com/secureflow/secureflow"
+Changelog = "https://github.com/secureflow/secureflow/blob/main/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/secureflow/secureflow/issues"
 
 [project.scripts]
 secureflow = "secureflow.cli:main"
@@ -118,7 +123,7 @@ skip_covered = true
 
 # MyPy configuration
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

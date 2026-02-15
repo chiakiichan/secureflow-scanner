@@ -1,12 +1,13 @@
 """
-SecureFlow Base Scanner (MVP)
+SecureFlow Base Scanner
 
 A scanner is a component that inspects files and returns security findings.
 
-Example scanners:
-- SecretsScanner
-- DependencyScanner
-- DockerScanner (later)
+Implemented scanners:
+- SecretsScanner  - Detects hardcoded secrets
+- DependencyScanner - Finds vulnerable dependencies via OSV API
+- DockerScanner - Analyzes Dockerfiles and images
+- IaCScanner - Detects IaC misconfigurations
 """
 
 from __future__ import annotations
@@ -17,21 +18,20 @@ from typing import List
 
 from secureflow.core.finding import Finding
 
+
 class BaseScanner(ABC):
     """
-    Minimal scanner interface.
-    Each scanner must implement scan().
+    Base scanner interface.
+    Each scanner must implement scan() and return a list of Findings.
     """
 
     name: str = "base"
 
-    def __init__(self, target_path: Path, exclude: list[str]=None):
+    def __init__(self, target_path: Path, exclude: list[str] | None = None):
         self.target_path = target_path
         self.exclude = exclude or []
 
     @abstractmethod
     def scan(self) -> List[Finding]:
-        """
-        Run the scan and return findings.
-        """
+        """Run the scan and return findings."""
         raise NotImplementedError
